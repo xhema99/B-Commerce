@@ -1,0 +1,7 @@
+*.py[cod]
+__pycache__/
+v調/
+env/
+.env
+db.sqlite3
+media/
