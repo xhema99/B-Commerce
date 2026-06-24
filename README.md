@@ -1,31 +1,143 @@
-📚 B-Commerce - Full Stack Book Marketplace & Messaging System
-B-Commerce es una plataforma integral de comercio electrónico para libros que combina un motor de búsqueda avanzado con un sistema de comunicación bidireccional entre usuarios. Los usuarios pueden gestionar sus catálogos, descubrir libros y negociar directamente a través de un chat privado integrado.
 
-🚀 Módulos Destacados
-💬 Sistema de Comunicación (Inbox)
-Este módulo permite la interacción directa entre la comunidad:
+# 📚 B-Commerce
 
-Chats por Producto: Cada conversación está vinculada a un libro específico, facilitando el contexto de la negociación.
+**Marketplace de compraventa de libros usados entre particulares.**
 
-Bandeja de Entrada Dinámica: Listado de chats activos que muestra al interlocutor, la imagen del libro y la última fecha de modificación.
+Un marketplace moderno donde los amantes de la lectura pueden comprar y vender libros de segunda mano. Construido con Django y Tailwind CSS, con un enfoque en experiencia de usuario, rendimiento y buenas prácticas de desarrollo.
 
-Interfaz de Chat: Sistema de mensajes estilizados donde los mensajes propios se diferencian visualmente de los recibidos mediante colores (Blue vs Gray).
+---
 
-Lógica de Seguridad: Validación para evitar que un vendedor inicie un chat consigo mismo y protección de hilos mediante @login_required.
+## ✨ Características
 
-📖 Gestión de Libros & Catálogo
-Búsqueda Inteligente: Filtrado por categorías y términos de búsqueda mediante consultas complejas con el objeto Q.
+- **Catálogo completo** con búsqueda avanzada, filtros por categoría y ordenación
+- **Sistema de autenticación** con registro, inicio de sesión y perfiles de usuario
+- **Panel de usuario** para gestionar publicaciones
+- **Mensajería integrada** entre compradores y vendedores
+- **Diseño responsive y premium** con sistema de diseño propio
+- **Soft delete** en lugar de eliminación física de registros
+- **Manejo seguro de precios** con `DecimalField` y validación
+- **Preparado para producción** con Docker, GitHub Actions y configuración por entornos
 
-Panel de Vendedor: Espacio privado para que los usuarios gestionen sus publicaciones, editen precios o marquen artículos como vendidos.
+---
 
-🔐 Seguridad y Estilo
-Autenticación: Registro y login de usuarios con validación completa de formularios.
+## 🛠️ Stack tecnológico
 
-Frontend Moderno: Uso intensivo de Tailwind CSS para crear una experiencia de usuario responsiva, con componentes como modales de mensaje y cuadrículas de productos.
+| Capa | Tecnología |
+|------|-----------|
+| **Backend** | Django 5.0.7 + Python 3.12 |
+| **Base de datos** | SQLite (desarrollo) / PostgreSQL 16 (producción) |
+| **Frontend** | Tailwind CSS 3 + Django Templates (SSR) |
+| **Testing** | pytest + pytest-django (28 tests) |
+| **Infraestructura** | Docker, docker-compose, GitHub Actions |
+| **Calidad** | Ruff, Black, isort |
 
-🛠️ Detalles de Implementación Técnica
-Modelos: Relaciones Many-to-Many para los miembros de una conversación y ForeignKeys para vincular mensajes a hilos y libros.
+---
 
-Forms: Personalización de widgets de Django para inyectar clases de Tailwind directamente en el HTML.
+## 🚀 Inicio rápido
 
-Arquitectura: Separación modular en apps (core, libro, panel, comunicacion) para mantener un código limpio y escalable.
+```bash
+# Clonar e instalar
+git clone https://github.com/xhema99/B-Commerce.git
+cd B-Commerce
+
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+pip install -r requirements-dev.txt
+cp .env.example .env
+
+# Compilar assets
+npm install
+npm run build:css
+
+# Base de datos y servidor
+python manage.py migrate
+python manage.py runserver
+```
+
+Abrir [http://localhost:8000](http://localhost:8000) 🎉
+
+---
+
+## 🐳 Docker (producción)
+
+```bash
+docker compose up --build
+```
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+.
+├── apps/
+│   ├── core/              # Landing, autenticación
+│   ├── libro/             # Catálogo y CRUD de libros
+│   ├── panel/             # Panel del usuario
+│   └── comunicacion/      # Mensajería entre usuarios
+├── config/
+│   └── settings/          # Configuración por entorno
+│       ├── base.py
+│       ├── local.py
+│       ├── production.py
+│       └── test.py
+├── static/                # Assets (CSS, JS)
+├── templates/             # Templates base y componentes
+├── tests/                 # Tests (28 tests)
+├── .github/workflows/     # CI/CD
+└── Dockerfile / docker-compose.yml
+```
+
+---
+
+## 🔧 Comandos útiles
+
+```bash
+make run          # Iniciar servidor de desarrollo
+make test         # Ejecutar tests
+make check        # Validar proyecto
+make css          # Compilar Tailwind CSS
+make migrate      # Ejecutar migraciones
+```
+
+---
+
+## 📊 Testing
+
+```bash
+pytest tests/ --ds=config.settings.test -v --cov
+```
+
+Actualmente **28 tests** pasando, cubriendo modelos, formularios, vistas, permisos y flujos completos.
+
+---
+
+## 🏗️ Arquitectura
+
+- **Server-Side Rendering** con Django Templates
+- **4 apps modulares** con responsabilidades bien delimitadas
+- **Settings separados** por entorno (desarrollo, producción, testing)
+- **ORM optimizado** con `select_related` y `prefetch_related`
+- **Señales** para eventos como nuevos mensajes
+- **Sistema de diseño propio** con Tailwind CSS y paleta personalizada
+
+---
+
+## 🎨 Paleta de colores
+
+| Color | Código |
+|-------|--------|
+| Primary | `#92B1A5` |
+| Primary Dark | `#7A9C90` |
+| Secondary | `#DA8C91` |
+| Accent | `#DEB4C4` |
+| Neutral | `#DDD2D2` |
+| Background | `#F8F6F4` |
+| Text | `#2E2E2E` |
+
+---
+
+## 📄 Licencia
+
+MIT
