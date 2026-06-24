@@ -1,7 +1,47 @@
+# Python
 *.py[cod]
 __pycache__/
-v調/
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
 env/
+.venv/
 .env
+
+# Database
 db.sqlite3
+*.sqlite3
+
+# Media files
 media/
+
+# Static files (generated)
+static/css/*.css
+static/js/*.js
+!static/src/
+
+# Node
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Coverage
+.coverage
+htmlcov/
+coverage/

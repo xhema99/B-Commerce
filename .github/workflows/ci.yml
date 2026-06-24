@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff black isort
+      - run: ruff check apps/ config/ tests/
+      - run: black --check apps/ config/ tests/ --diff
+      - run: isort --check-only apps/ config/ tests/ --diff
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: bcommerce
+          POSTGRES_USER: bcommerce_user
+          POSTGRES_PASSWORD: bcommerce_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+      - name: Run tests
+        run: |
+          pytest tests/ --ds=config.settings.test -v --cov=. --cov-report=term-missing
+        env:
+          DJANGO_SECRET_KEY: test-key-not-for-production
+          DATABASE_URL: postgres://bcommerce_user:bcommerce_pass@localhost:5432/bcommerce

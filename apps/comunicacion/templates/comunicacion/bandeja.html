@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mensajes — B-Commerce{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+  <h1 class="section-title mb-2">Mensajes</h1>
+  <p class="section-subtitle mb-8">Tus conversaciones con vendedores y compradores</p>
+
+  {% if comunicacion %}
+    <div class="space-y-2">
+      {% for c in comunicacion %}
+        <a href="{% url 'comunicacion:detalles' c.id %}" class="card p-4 md:p-5 block hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5">
+          <div class="flex items-center gap-4">
+            <div class="avatar avatar-lg flex-shrink-0">
+              {% for m in c.miembros.all %}
+                {% if m != request.user %}{{ m.username|first|upper }}{% endif %}
+              {% endfor %}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-0.5">
+                <p class="font-medium text-foreground">
+                  {% for m in c.miembros.all %}
+                    {% if m != request.user %}{{ m.username }}{% endif %}
+                  {% endfor %}
+                </p>
+                <span class="text-xs text-foreground/30">{{ c.modificado_en|date:"d/m/y" }}</span>
+              </div>
+              <p class="text-sm text-foreground/50 truncate">Sobre: {{ c.libro.nombre }}</p>
+              {% if c.mensajes.exists %}
+                <p class="text-xs text-foreground/40 mt-1 truncate">{{ c.mensajes.last.contenido }}</p>
+              {% endif %}
+            </div>
+            <div class="w-12 h-16 rounded-lg bg-background overflow-hidden flex-shrink-0">
+              {% if c.libro.imagen %}
+                <img src="{{ c.libro.imagen.url }}" alt="" class="w-full h-full object-cover">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center"><span class="text-sm">📚</span></div>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon">💬</span>
+      <h3 class="empty-state-title">Bandeja vacía</h3>
+      <p class="empty-state-text">Cuando contactes a un vendedor o te escriban, los mensajes aparecerán acá.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

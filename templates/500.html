@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Error del servidor{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-24 text-center">
+  <span class="text-8xl mb-8 block">🔮</span>
+  <h1 class="section-title mb-4">Algo salió mal</h1>
+  <p class="text-foreground/60 mb-8 text-lg">Estamos trabajando en ello. Volvé a intentar en unos minutos.</p>
+  <a href="{% url 'core:index' %}" class="btn-primary inline-block">Volver al inicio</a>
+</div>
+{% endblock %}

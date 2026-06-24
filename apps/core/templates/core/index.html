@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}B-Commerce — Libros usados entre particulares{% endblock %}
+
+{% block content %}
+<section class="hero-gradient min-h-[80vh] md:min-h-[85vh] flex items-center relative overflow-hidden">
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(146,177,165,0.15),transparent_70%)]"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(218,140,145,0.08),transparent_70%)]"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10 w-full">
+    <div class="max-w-3xl fade-in-up">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary mb-6">📖 +500 libros publicados</span>
+      <h1 class="text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-foreground leading-[1.1] tracking-tight mb-6">
+        Descubrí tu próxima <br><span class="text-primary">gran lectura</span>
+      </h1>
+      <p class="text-lg md:text-xl text-foreground/60 leading-relaxed mb-8 max-w-xl">
+        El marketplace de libros usados entre particulares. Encontrá tesoros escondidos, publicá tus libros y conectá con amantes de la lectura.
+      </p>
+
+      <form method="get" action="{% url 'libro:libros' %}" class="search-bar max-w-xl mb-8 fade-in-up stagger-3">
+        <span class="material-icons-outlined search-icon">search</span>
+        <input name="consulta" placeholder="Buscá por título, autor o categoría...">
+        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 btn-primary text-sm !py-2 !px-5">Buscar</button>
+      </form>
+
+      <div class="flex flex-col sm:flex-row gap-4 fade-in-up stagger-4">
+        <a href="{% url 'libro:libros' %}" class="btn-primary text-center px-8">Explorar catálogo</a>
+        {% if not request.user.is_authenticated %}
+          <a href="{% url 'core:crearcuenta' %}" class="btn-ghost text-center">Crear cuenta gratis <span class="material-icons-outlined text-base align-middle ml-1">arrow_forward</span></a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-12 md:py-16 border-b border-neutral-light/20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+      <div class="stat-card">
+        <p class="stat-number">+500</p>
+        <p class="stat-label">Libros publicados</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-number">+200</p>
+        <p class="stat-label">Usuarios activos</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-number">+100</p>
+        <p class="stat-label">Ventas realizadas</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-number">30</p>
+        <p class="stat-label">Categorías</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <h2 class="section-title">Últimos publicados</h2>
+        <p class="section-subtitle">Los libros más recientes de la comunidad</p>
+      </div>
+      <a href="{% url 'libro:libros' %}?orden=reciente" class="hidden sm:flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark transition-colors">
+        Ver todos <span class="material-icons-outlined text-base">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="carousel">
+      {% for libro in libros %}
+        <div class="carousel-item w-[220px] sm:w-[250px] md:w-[280px]">
+          {% include 'components/book_card.html' %}
+        </div>
+      {% empty %}
+        <div class="w-full py-16 text-center">
+          <span class="text-4xl block mb-4 opacity-30">📭</span>
+          <p class="text-foreground/50">Aún no hay libros publicados. ¡Sé el primero!</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <a href="{% url 'libro:libros' %}?orden=reciente" class="sm:hidden mt-6 flex items-center justify-center gap-1 text-sm font-medium text-primary transition-colors">
+      Ver todos <span class="material-icons-outlined text-base">arrow_forward</span>
+    </a>
+  </div>
+</section>
+
+<section id="categories" class="py-16 md:py-24 bg-white border-y border-neutral-light/20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="section-title">Explorá por categorías</h2>
+      <p class="section-subtitle mx-auto">Encontrá exactamente lo que buscas</p>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {% for categoria in categorias %}
+        <a href="{% url 'libro:libros' %}?categoria={{ categoria.id }}" class="stat-card group hover:bg-primary hover:text-white transition-all duration-300">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-white/20 flex items-center justify-center mx-auto mb-3 transition-colors">
+            <span class="text-xl">📖</span>
+          </div>
+          <p class="font-serif font-semibold text-foreground group-hover:text-white transition-colors">{{ categoria.name }}</p>
+          <p class="text-xs text-foreground/40 group-hover:text-white/60 mt-1">{{ categoria.libros.count }} libro{{ categoria.libros.count|pluralize:'s' }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="section-title">¿Por qué B-Commerce?</h2>
+      <p class="section-subtitle mx-auto">Una nueva forma de comprar y vender libros</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="card-elevated p-6 md:p-8 text-center hover:-translate-y-1 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <span class="material-icons-outlined text-2xl text-primary">paid</span>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Ahorrá en grande</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Libros en excelente estado a una fracción del precio de uno nuevo. Tu bolsillo te lo va a agradecer.</p>
+      </div>
+      <div class="card-elevated p-6 md:p-8 text-center hover:-translate-y-1 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <span class="material-icons-outlined text-2xl text-primary">recycling</span>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Consciente y sostenible</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Al comprar libros usados reducís el desperdicio y le das una segunda vida a cada ejemplar.</p>
+      </div>
+      <div class="card-elevated p-6 md:p-8 text-center hover:-translate-y-1 transition-all duration-300">
+        <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <span class="material-icons-outlined text-2xl text-primary">people</span>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Comunidad de lectores</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Conectá con otros amantes de la lectura, compartí reseñas y descubrí tu próxima obsesión literaria.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-24 bg-white border-y border-neutral-light/20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="section-title">Cómo funciona</h2>
+      <p class="section-subtitle mx-auto">Tres pasos para encontrar tu próxima lectura</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 md:gap-12">
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 relative">
+          <span class="text-2xl font-bold font-serif text-primary">1</span>
+          <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <span class="material-icons-outlined text-white text-sm">search</span>
+          </div>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Buscá</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Explorá nuestro catálogo por categoría, título o autor. Filtra por precio y encontrá el libro perfecto.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 relative">
+          <span class="text-2xl font-bold font-serif text-primary">2</span>
+          <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <span class="material-icons-outlined text-white text-sm">chat</span>
+          </div>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Contactá</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Hablá directamente con el vendedor a través de nuestro sistema de mensajería integrado.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 relative">
+          <span class="text-2xl font-bold font-serif text-primary">3</span>
+          <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <span class="material-icons-outlined text-white text-sm">auto_stories</span>
+          </div>
+        </div>
+        <h3 class="font-serif font-bold text-lg mb-2">Disfrutá</h3>
+        <p class="text-sm text-foreground/50 leading-relaxed">Acordá con el vendedor y empezá a disfrutar de tu nueva lectura. Así de simple.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 md:py-24 hero-gradient relative overflow-hidden">
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(146,177,165,0.12),transparent_70%)]"></div>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <span class="text-5xl mb-6 block">📚</span>
+    <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-foreground leading-tight mb-4">¿Tenés libros que ya leíste?</h2>
+    <p class="text-lg text-foreground/60 mb-8 max-w-lg mx-auto">Publicarlos es gratis. Dale una segunda vida a tus libros y conectá con otros lectores apasionados.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{% url 'libro:nuevo' %}" class="btn-primary px-8 text-center">Publicar un libro</a>
+      <a href="{% url 'libro:libros' %}" class="btn-ghost text-center px-8">Explorar catálogo</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

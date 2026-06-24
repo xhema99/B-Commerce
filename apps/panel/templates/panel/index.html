@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis libros — B-Commerce{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <h1 class="section-title">Mis libros</h1>
+      <p class="section-subtitle">Gestioná tus publicaciones</p>
+    </div>
+    <a href="{% url 'libro:nuevo' %}" class="btn-primary text-sm !py-2.5 !px-5">+ Publicar libro</a>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <div class="stat-card">
+      <p class="stat-number">{{ libros.count }}</p>
+      <p class="stat-label">Publicaciones</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-number">{{ libros|dictsortreversed:'vendido'|slice:':1'|length }}</p>
+      <p class="stat-label">Vendidos</p>
+    </div>
+  </div>
+
+  {% if libros %}
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+      {% for libro in libros %}
+        <div class="book-card">
+          <a href="{% url 'libro:detalles' libro.pk %}">
+            <div class="book-card-image !aspect-[4/3]">
+              {% if libro.imagen %}
+                <img src="{{ libro.imagen.url }}" alt="{{ libro.nombre }}" loading="lazy">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center"><span class="text-4xl opacity-30">📚</span></div>
+              {% endif %}
+              <div class="book-card-overlay"></div>
+              {% if libro.vendido %}
+                <span class="book-card-badge badge-sold">Vendido</span>
+              {% endif %}
+            </div>
+          </a>
+          <div class="p-4">
+            <span class="badge-primary text-[10px]">{{ libro.categoria.name }}</span>
+            <h3 class="font-serif font-semibold text-foreground mt-1 text-sm">{{ libro.nombre }}</h3>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-lg font-bold text-primary-dark">{{ libro.precio }} €</span>
+              <span class="text-[10px] text-foreground/30">{{ libro.creado_en|date:"d/m/Y" }}</span>
+            </div>
+            <div class="flex gap-2 mt-3 pt-3 border-t border-neutral-light/20">
+              <a href="{% url 'libro:editar' libro.pk %}" class="text-xs text-primary hover:text-primary-dark font-medium flex items-center gap-1"><span class="material-icons-outlined text-sm">edit</span>Editar</a>
+              <a href="{% url 'libro:eliminar' libro.pk %}" class="text-xs text-secondary hover:text-secondary/80 font-medium flex items-center gap-1" onclick="return confirm('¿Eliminar este libro?')"><span class="material-icons-outlined text-sm">delete</span>Eliminar</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon">📝</span>
+      <h3 class="empty-state-title">Aún no publicaste nada</h3>
+      <p class="empty-state-text">Publicá tu primer libro y empezá a vender.</p>
+      <a href="{% url 'libro:nuevo' %}" class="btn-primary">Publicar libro</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

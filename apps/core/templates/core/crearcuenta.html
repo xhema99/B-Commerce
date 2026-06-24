@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta — B-Commerce{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-12">
+  <div class="card-elevated w-full max-w-md p-8 fade-in-up">
+    <div class="text-center mb-8">
+      <span class="text-5xl mb-4 block">✨</span>
+      <h1 class="text-2xl font-serif font-bold text-foreground">Crear tu cuenta</h1>
+      <p class="text-foreground/50 text-sm mt-2">Unite a la comunidad de lectores</p>
+    </div>
+
+    <form method="post" action="." class="space-y-5">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm font-medium text-foreground/70 mb-1.5">Nombre de usuario</label>
+        {{ form.username }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-foreground/70 mb-1.5">Correo electrónico</label>
+        {{ form.email }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-foreground/70 mb-1.5">Contraseña</label>
+        {{ form.password1 }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-foreground/70 mb-1.5">Confirmar contraseña</label>
+        {{ form.password2 }}
+      </div>
+
+      {% if form.errors or form.non_field_errors %}
+        <div class="bg-secondary/10 border border-secondary/20 rounded-xl p-4 text-sm text-secondary">
+          {% for field in form %}{{ field.errors }}{% endfor %}
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn-primary w-full">Crear cuenta</button>
+    </form>
+
+    <p class="text-center mt-6 text-sm text-foreground/50">
+      ¿Ya tenés cuenta?
+      <a href="{% url 'core:login' %}" class="text-primary hover:text-primary-dark font-medium">Acceder</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

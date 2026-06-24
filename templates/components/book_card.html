@@ -1,0 +1,39 @@
+{% comment %}
+  Uso: {% include 'components/book_card.html' with libro=libro %}
+{% endcomment %}
+<div class="book-card w-full">
+  <a href="{% url 'libro:detalles' libro.pk %}" class="block">
+    <div class="book-card-image">
+      {% if libro.imagen %}
+        <img src="{{ libro.imagen.url }}" alt="{{ libro.nombre }}" loading="lazy">
+      {% else %}
+        <div class="w-full h-full flex items-center justify-center">
+          <span class="text-5xl opacity-30">📚</span>
+        </div>
+      {% endif %}
+      <div class="book-card-overlay"></div>
+      {% if libro.vendido %}
+        <span class="book-card-badge badge-sold">Vendido</span>
+      {% endif %}
+      <div class="book-card-actions">
+        <button class="book-card-action" onclick="event.preventDefault(); event.stopPropagation(); showToast('Añadido a favoritos'); this.querySelector('.material-icons-outlined').textContent='favorite'; this.classList.add('!text-secondary');">
+          <span class="material-icons-outlined text-lg">favorite_border</span>
+        </button>
+      </div>
+    </div>
+    <div class="book-card-body">
+      <div class="flex items-center gap-1.5 mb-1.5">
+        <span class="badge-primary text-[10px] px-2 py-0.5">{{ libro.categoria.name }}</span>
+        {% if not libro.vendido %}
+          <span class="text-[10px] text-primary/60 font-medium">Disponible</span>
+        {% endif %}
+      </div>
+      <h3 class="font-serif font-semibold text-foreground group-hover:text-primary transition-colors leading-tight mb-1">{{ libro.nombre }}</h3>
+      <p class="text-xs text-foreground/40 mb-2">por {{ libro.creado_por.username }}</p>
+      <div class="flex items-center justify-between">
+        <span class="text-lg font-bold text-primary-dark">{{ libro.precio }} €</span>
+        <span class="text-[10px] text-foreground/30">{{ libro.creado_en|timesince }}</span>
+      </div>
+    </div>
+  </a>
+</div>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta_description %}B-Commerce — Marketplace de libros usados entre particulares. Compra y vende libros de segunda mano.{% endblock %}">
+  <meta name="theme-color" content="#92B1A5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+
+  <meta property="og:title" content="{% block og_title %}B-Commerce — Libros usados entre particulares{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Marketplace de compraventa de libros usados. Encuentra tu próxima lectura.{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="B-Commerce">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+  <title>{% block title %}B-Commerce{% endblock %}</title>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+  {% include 'components/navbar.html' %}
+
+  <main class="flex-1 pt-20">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include 'components/footer.html' %}
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3"></div>
+
+  <script>
+    // Navbar scroll effect
+    let lastScroll = 0;
+    const navbar = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll > 80) {
+        navbar.classList.add('shadow-sm');
+      } else {
+        navbar.classList.remove('shadow-sm');
+      }
+      lastScroll = currentScroll;
+    });
+
+    // Toast system
+    window.showToast = function(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const colors = { success: 'bg-foreground', error: 'bg-secondary', info: 'bg-primary' };
+      const icons = { success: 'check_circle', error: 'error', info: 'info' };
+      const toast = document.createElement('div');
+      toast.className = `${colors[type]} text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 fade-in-down text-sm max-w-sm`;
+      toast.innerHTML = `<span class="material-icons-outlined text-lg">${icons[type]}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(8px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+    };
+
+    // Mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          menu.classList.toggle('hidden');
+          menu.classList.toggle('fade-in-down');
+        });
+      }
+
+      // Dropdowns
+      document.querySelectorAll('[data-dropdown]').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const target = document.getElementById(trigger.dataset.dropdown);
+          target.classList.toggle('dropdown-open');
+        });
+      });
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('dropdown-open'));
+      });
+
+      // Scroll animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

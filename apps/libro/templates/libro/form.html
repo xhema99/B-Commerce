@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} — B-Commerce{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+  <div class="mb-8">
+    <h1 class="section-title">{{ title }}</h1>
+    <p class="section-subtitle">Completá los datos de tu libro</p>
+  </div>
+
+  <div class="card-elevated p-6 md:p-8">
+    {% if title == 'Nuevo Libro' %}
+    <div class="flex items-center gap-3 mb-8 p-4 bg-primary/5 rounded-xl">
+      <span class="material-icons-outlined text-primary">info</span>
+      <p class="text-sm text-foreground/60">Publicar es completamente gratis. Una vez que alguien contacte, coordinás con él la entrega.</p>
+    </div>
+    {% endif %}
+
+    <form method="post" action="." enctype="multipart/form-data" class="space-y-6" id="book-form">
+      {% csrf_token %}
+
+      {% for field in form %}
+        {% if field.name == 'imagen' %}
+          <div>
+            <label class="block text-sm font-medium text-foreground/70 mb-2">{{ field.label }}</label>
+            <div class="image-upload" id="image-upload-zone" onclick="document.getElementById('id_imagen').click()">
+              <div id="upload-placeholder">
+                <span class="material-icons-outlined text-4xl text-foreground/20 mb-3 block">add_photo_alternate</span>
+                <p class="text-sm text-foreground/40">Hacé clic o arrastrá una imagen</p>
+                <p class="text-xs text-foreground/20 mt-1">PNG, JPG o WebP · Máx 5MB</p>
+              </div>
+              <div id="upload-preview" class="hidden">
+                <img id="preview-image" src="" alt="Preview" class="max-h-48 mx-auto rounded-xl">
+                <button type="button" class="text-xs text-secondary mt-2" onclick="resetImage()">Eliminar imagen</button>
+              </div>
+              {{ field }}
+            </div>
+            {% if field.help_text %}<p class="text-xs text-foreground/40 mt-1">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="text-xs text-secondary mt-1">{{ field.errors.0 }}</p>{% endif %}
+          </div>
+        {% elif field.name == 'vendido' %}
+          <div class="flex items-center gap-3 p-4 bg-background rounded-xl">
+            {{ field }}
+            <label for="{{ field.id_for_label }}" class="text-sm font-medium text-foreground/70 cursor-pointer">Marcar como vendido</label>
+          </div>
+        {% else %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-foreground/70 mb-1.5">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="text-xs text-foreground/40 mt-1">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<p class="text-xs text-secondary mt-1">{{ field.errors.0 }}</p>{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% if form.errors or form.non_field_errors %}
+        <div class="bg-secondary/10 border border-secondary/20 rounded-xl p-4 text-sm text-secondary">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <button type="submit" class="btn-primary w-full">Guardar libro</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.getElementById('id_imagen')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('preview-image').src = ev.target.result;
+        document.getElementById('upload-placeholder').classList.add('hidden');
+        document.getElementById('upload-preview').classList.remove('hidden');
+        document.getElementById('image-upload-zone').classList.add('!border-primary');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  function resetImage() {
+    document.getElementById('id_imagen').value = '';
+    document.getElementById('upload-placeholder').classList.remove('hidden');
+    document.getElementById('upload-preview').classList.add('hidden');
+    document.getElementById('image-upload-zone').classList.remove('!border-primary');
+  }
+  const zone = document.getElementById('image-upload-zone');
+  if (zone) {
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('image-upload-dragover'); });
+    zone.addEventListener('dragleave', () => { zone.classList.remove('image-upload-dragover'); });
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('image-upload-dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) document.getElementById('id_imagen').files = e.dataTransfer.files;
+    });
+  }
+</script>
+{% endblock %}

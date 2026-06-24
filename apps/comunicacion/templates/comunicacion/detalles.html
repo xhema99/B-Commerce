@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conversación — B-Commerce{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+  <div class="flex items-center gap-4 mb-6">
+    <a href="{% url 'comunicacion:bandeja' %}" class="btn-icon border border-neutral-light/30">
+      <span class="material-icons-outlined">arrow_back</span>
+    </a>
+    <div class="flex-1">
+      <div class="flex items-center gap-2">
+        {% for m in comunicacion.miembros.all %}
+          {% if m != request.user %}
+            <div class="avatar avatar-sm">{{ m.username|first|upper }}</div>
+            <p class="font-medium text-foreground">{{ m.username }}</p>
+            <span class="w-2 h-2 rounded-full bg-primary"></span>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="text-xs text-foreground/40 mt-0.5">{{ comunicacion.libro.nombre }}</p>
+    </div>
+  </div>
+
+  <div class="card-elevated p-4 md:p-6 mb-4 min-h-[50vh] max-h-[60vh] overflow-y-auto space-y-4" id="chat-messages">
+    {% for mensaje in comunicacion.mensajes.all %}
+      <div class="{% if mensaje.creado_por == request.user %}message-sent{% else %}message-received{% endif %} fade-in-up">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-[10px] font-medium text-foreground/40">
+            {% if mensaje.creado_por != request.user %}{{ mensaje.creado_por.username }} · {% endif %}
+            {{ mensaje.creado_en|date:"H:i" }}
+          </span>
+        </div>
+        <p class="text-sm text-foreground/80">{{ mensaje.contenido }}</p>
+      </div>
+    {% empty %}
+      <div class="text-center py-12 text-foreground/40">
+        <span class="text-3xl block mb-3">💬</span>
+        <p class="text-sm">No hay mensajes todavía. Escribí el primero.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="card-elevated p-4">
+    <form method="post" action="." class="flex gap-3">
+      {% csrf_token %}
+      {{ form.contenido }}
+      <button type="submit" class="btn-primary !py-2.5 !px-5 flex-shrink-0">
+        <span class="material-icons-outlined">send</span>
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const chat = document.getElementById('chat-messages');
+  if (chat) chat.scrollTop = chat.scrollHeight;
+</script>
+{% endblock %}

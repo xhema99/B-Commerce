@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.env
+db.sqlite3
+node_modules
+static/css
+static/js
+.pytest_cache
+.coverage
+htmlcov
+.DS_Store
+Thumbs.db

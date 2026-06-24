@@ -1,0 +1,16 @@
+-r requirements.txt
+
+# Testing
+pytest==9.0.3
+pytest-django==4.9.0
+pytest-cov==6.0.0
+coverage==7.6.0
+
+# Code quality
+ruff==0.6.0
+black==24.8.0
+isort==5.13.2
+
+# Dev tools
+django-extensions==3.2.3
+werkzeug==3.0.3

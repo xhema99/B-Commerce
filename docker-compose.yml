@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: bcommerce
+      POSTGRES_USER: bcommerce_user
+      POSTGRES_PASSWORD: bcommerce_pass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bcommerce_user -d bcommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+      DJANGO_DEBUG: "False"
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: bcommerce
+      DB_USER: bcommerce_user
+      DB_PASSWORD: bcommerce_pass
+      DB_HOST: db
+      DB_PORT: "5432"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
